@@ -12,16 +12,6 @@ lyrics = []
 artists = []
 artists_objects = []
 
-def play(indices):
-    index = 0
-    for a in artists_objects:
-        for s in a.songs:
-            i = indices[index][0]           
-            if(index == i):
-                print(s.title);
-            index += 1;
-
-
 for i in range(0,max_artists):
     artist_input = input("Give me an artist: ");    
     artists.append(artist_input);
