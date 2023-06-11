@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import webbrowser
 
-genius = Genius("3NTZjDyL0g5Y8_Q0Ok8JFUbwFraC16PxqZEfG6222t5rkKt5b51yn0-NBPrd8K6L")
+genius = Genius("API-TOKEN")
 max_artists = 3
 max_songs = 3 
 lyrics = []
