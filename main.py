@@ -1,18 +1,29 @@
-# This is a automatic Disc Jockey written in Python
+# DJone.py: This is a automatic Disc Jockey written in Python
 
 from lyricsgenius import Genius
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import webbrowser
 
-genius = Genius("API TOKEN")
-max_artists = 4
-max_songs = 2 
+genius = Genius("3NTZjDyL0g5Y8_Q0Ok8JFUbwFraC16PxqZEfG6222t5rkKt5b51yn0-NBPrd8K6L")
+max_artists = 3
+max_songs = 3 
 lyrics = []
 artists = []
 artists_objects = []
 
+def play(indices):
+    index = 0
+    for a in artists_objects:
+        for s in a.songs:
+            i = indices[index][0]           
+            if(index == i):
+                print(s.title);
+            index += 1;
+
+
 for i in range(0,max_artists):
-    artist_input = input("Give me an artist:");    
+    artist_input = input("Give me an artist: ");    
     artists.append(artist_input);
 
 
@@ -23,7 +34,6 @@ for a in artists:
     for k in range(0,len(artist.songs)):
         lyrics.append(artist.songs[k].lyrics)
 
-
 # Create a CountVectorizer instance to convert texts into vectors
 vectorizer = CountVectorizer()
 
@@ -33,39 +43,43 @@ vectorized_text = vectorizer.fit_transform(lyrics)
 similarities = []
 indexes = []
 
-for i in range(1,max_songs*max_artists):   
-    for k in range(1,max_songs*max_artists):
+for i in range(0,len(lyrics)):   
+    for k in range(0,len(lyrics)):
         # Calculate cosine similarity between the vectors
-        cosine_sim = cosine_similarity(vectorized_text[i-1], vectorized_text[k-1])
+        cosine_sim = cosine_similarity(vectorized_text[i], vectorized_text[k])
         if(i != k):
-            #print("Cosine Similarity:", i, k, cosine_sim[0][0])
-            similarities.append(cosine_sim[0][0])   
-            indexes.append([i-1,k-1])                 
+            try:
+                print("Cosine Similarity:", i, k, cosine_sim[0][0])   
+                similarities.index(cosine_sim[0][0])                                      
+            except:
+                if(cosine_sim[0][0] < 0.9):
+                    similarities.append([cosine_sim[0][0],i,k])   
+
+sorted = sorted(similarities,reverse=True)
+print(sorted);
+
+song_indices = []
+
+index = 0
+for val in sorted:
+    if(index%2!=1):        
+        song_left = val[1]
+        song_right = val[2]
+        try:
+            song_indices.index(song_left);
+        except:
+            song_indices.append(song_left);
+        try:
+            song_indices.index(song_right);
+        except:
+            song_indices.append(song_right);
+    index+=1;
 
 
-similarities = list(set(similarities))
-
-for i in range(0,len(similarities)):
-    for k in range(0,len(indexes)-1):
-        if(indexes[k][0] == indexes[i][1] and indexes[k][1] == indexes[i][0]):
-            indexes.pop(k);
-
-# Sorting example from OpenAI ChatGPT:
-# Create a list of tuples with original values and indices
-indexed_nums = [(value, index) for index, value in enumerate(similarities)]
-
-# Sort the indexed_nums list based on values
-sorted_nums = sorted(indexed_nums, reverse=True)
-
-# Extract the sorted values and indices
-sorted_values = [value for value, _ in sorted_nums]
-sorted_indices = [index for _, index in sorted_nums]
-
-print(sorted_values)
-#print(sorted_indices)
+print(song_indices);
 
 indices_value = []
-for i in sorted_indices:   
+for i in song_indices:   
     if(i < len(lyrics)):        
         indices_value.append(i);
 
@@ -77,4 +91,7 @@ for a in artists_objects:
         
 for i in indices_value:
     print(songs_ordered[i]);
+    webbrowser.open("https://www.youtube.com/results?search_query="+songs_ordered[i])
+
+
 
