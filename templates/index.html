@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DJone - a python disc jockey</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;1,400&display=swap');
+        body {
+            font-family: Roboto;
+        }
+        h1 {
+            padding:20px;
+            background-color: aquamarine;
+            margin:0;
+        }
+        form {
+            padding:20px;
+            background-color:azure;
+        }
+        #data-container {            
+            padding:20px;
+            background-color: aqua;
+        }
+	#loading {
+	  display:none;
+	}
+    </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body>
+    <h1>DJone</h1>
+    
+    <form method="POST" action="/">
+        {{ form.csrf_token }}
+        {{ form.name0.label }} {{ form.name0 }}<br />
+        {{ form.name1.label }} {{ form.name1 }}<br />
+        {{ form.name2.label }} {{ form.name2 }}<br />
+        {{ form.name3.label }} {{ form.name3 }}<br />
+        {{ form.name4.label }} {{ form.name4 }}<br /><br />
+        {{ form.submit }}
+    </form>
+    
+    <div id="loading">
+        ...loading...
+    </div>
+
+    <div id="data-container">
+        <ol id="myList"></ol>
+    </div>
+
+    <script>
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        })
+
+       $(document).ready(function() {
+            $('form').submit(function(e) {
+                e.preventDefault();  // Prevent form submission
+		$('#loading').html("...loading...");
+		$('#loading').show();
+
+                // Collect form data
+                var formData = {
+                    name0: $('#name0').val(),
+                    name1: $('#name1').val(),
+                    name2: $('#name2').val(),
+                    name3: $('#name3').val(),
+                    name4: $('#name4').val(),
+                };
+
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        console.log(response)                        
+			$('#loading').hide();
+                        for(s in response) {
+                            $("#myList").append($('<li>').html("<a href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                        }            
+                    },
+                   error: function(xhr, status, error) {
+                    	$("#loading").html("failed: error");
+			$("#loading").show();
+			console.log(error);
+                   }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
