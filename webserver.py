@@ -10,7 +10,7 @@ from wtforms.validators import DataRequired
 import os
 
 SECRET_KEY = os.urandom(32)
-genius = Genius("API-TOKEN")
+genius = Genius("N_HS0PvD1iTh5NbeWa7PIk5Y3jr0MsDBT4c4QCSaQiUg6140-i4_D0-dFTDuLHxm")
 max_artists = 5
 max_songs = 3 
 lyrics = []
@@ -37,7 +37,7 @@ class ArtistsForm(FlaskForm):
     name2 = StringField('Artist 3')
     name3 = StringField('Artist 4')
     name4 = StringField('Artist 5')
-    submit = SubmitField('Order popular songs by similarity')
+    submit = SubmitField('Generate playlist')
 
 
 @csrf.exempt
