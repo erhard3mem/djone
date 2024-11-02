@@ -64,7 +64,7 @@ class ArtistsForm(FlaskForm):
 
 
 @csrf.exempt
-@cross_origin(origins=['https://djone-mslf.onrender.com/'])
+#@cross_origin(origins=['https://djone-mslf.onrender.com/'])
 @app.route('/', methods=['GET', 'POST'])
 def submit():
     form = ArtistsForm()
