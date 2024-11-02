@@ -1,5 +1,4 @@
 Flask
-flask_cors
 Flask-WTF
 lyricsgenius
 scikit-learn
