@@ -63,9 +63,6 @@ class ArtistsForm(FlaskForm):
 def submit():
     form = ArtistsForm()
 
-    
-
-
     if request.method == 'POST':
         print("POST request received")
         # Action to be executed when the button is clicked
@@ -157,9 +154,9 @@ def submit():
             return redirect(url_for('login'))
 
         # Step 1: Authenticate and authorize        
-        scopes = ["https://www.googleapis.com/auth/youtube"]
+        #scopes = ["https://www.googleapis.com/auth/youtube"]
         # Initialize YouTube API client
-        youtube = build('youtube', 'v3', credentials=credentials, scopes=scopes)
+        youtube = build('youtube', 'v3', credentials=credentials)
                 
         #flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
         #credentials = flow.run_local_server(port=0)
@@ -262,7 +259,8 @@ def oauth2callback():
         })
         token_json = token_response.json()
         session['credentials'] = token_json  # Speichern der Credentials in der Session
-        return redirect(url_for('profile'))
+        #return redirect(url_for('profile'))
+        return redirect(url_for('/'))
     return 'Fehler beim Anmelden.'
 
 @app.route('/profile')
