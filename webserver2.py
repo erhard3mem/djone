@@ -11,7 +11,7 @@ import os
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-#from flask_cors import CORS
+from flask_cors import CORS
 import requests
 
 
@@ -42,6 +42,8 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = SECRET_KEY
 
+CORS(app)
+
 csrf = CSRFProtect(app)
 
 
@@ -60,6 +62,7 @@ class ArtistsForm(FlaskForm):
 
 
 @csrf.exempt
+#@cross_origin(origins=['https://djone-mslf.onrender.com/'])
 @app.route('/', methods=['GET', 'POST'])
 def submit():
     form = ArtistsForm()
