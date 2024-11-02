@@ -181,6 +181,7 @@ def submit():
                 
         #flow = InstalledAppFlow.from_client_secrets_file("client_secret_945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com.json", scopes=scopes)
         flow = InstalledAppFlow.from_client_secrets_file("client_secrets_render.json", scopes=scopes)
+        flow.fetch_token()
         credentials = flow.credentials()
         #credentials = flow.run_local_server()
 
