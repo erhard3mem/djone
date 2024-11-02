@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from lyricsgenius import Genius
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -11,6 +11,12 @@ import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+#from flask_cors import CORS
+#import requests
+
+
+
+
 SECRET_KEY = os.urandom(32)
 genius = Genius("N_HS0PvD1iTh5NbeWa7PIk5Y3jr0MsDBT4c4QCSaQiUg6140-i4_D0-dFTDuLHxm")
 max_artists = 5
@@ -18,6 +24,17 @@ max_songs = 3
 lyrics = []
 artists = []
 artists_objects = []
+
+
+
+# YouTube v3 API
+CLIENT_ID = '945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com'
+CLIENT_SECRET = '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'
+REDIRECT_URI = 'https://djone-mslf.onrender.com/oauth2callback'
+TOKEN_URL = 'https://oauth2.googleapis.com/token'
+API_KEY = 'AIzaSyCgNSh4urTC7iAxLssLJw8YceEtdPApdcI'
+
+
 
 
 app = Flask(__name__)
@@ -208,6 +225,60 @@ def submit():
         return jsonify([playlist_id])
 
     return render_template('index.html', form=form)
+
+
+
+
+
+
+
+
+
+@app.route('/login')
+def login():
+    auth_url = (
+        'https://accounts.google.com/o/oauth2/auth?'
+        f'client_id={CLIENT_ID}&'
+        f'redirect_uri={REDIRECT_URI}&'
+        'response_type=code&'
+        'scope=https://www.googleapis.com/auth/youtube.readonly'
+    )
+    return redirect(auth_url)
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    code = request.args.get('code')
+    if code:
+        token_response = requests.post(TOKEN_URL, data={
+            'code': code,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'redirect_uri': REDIRECT_URI,
+            'grant_type': 'authorization_code',
+        })
+        token_json = token_response.json()
+        session['credentials'] = token_json  # Speichern der Credentials in der Session
+        return redirect(url_for('profile'))
+    return 'Fehler beim Anmelden.'
+
+@app.route('/profile')
+def profile():
+    credentials = session.get('credentials')
+    if credentials:
+        return f'Du bist angemeldet! Access Token: {credentials["access_token"]}'
+    return redirect(url_for('login'))
+
+@app.route('/api/subscriptions')
+def subscriptions():
+    credentials = session.get('credentials')
+    if credentials:
+        access_token = credentials['access_token']
+        headers = {'Authorization': f'Bearer {access_token}'}
+        response = requests.get('https://www.googleapis.com/youtube/v3/subscriptions', headers=headers)
+        return response.json()
+    return {'error': 'Unauthorized'}, 401
+
+
 
 
 if __name__ == '__main__': 

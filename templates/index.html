@@ -150,6 +150,28 @@ form input[type="submit"]:hover {
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
+
+    <div>
+        <button id="login_button">Mit Google anmelden</button>
+        <pre id="content"></pre>
+
+        <script>
+            document.getElementById('login_button').onclick = function() {
+                window.location.href = '/login'; // Leite zur Flask-Login-Route weiter
+            };
+
+            async function fetchSubscriptions() {
+                const response = await fetch('/api/subscriptions');
+                const data = await response.json();
+                document.getElementById('content').innerText = JSON.stringify(data, null, 2);
+            }
+        </script>
+    </div>
+
+
+
+
+
     <h1>DJone</h1>
     
     <form method="POST" action="/">
