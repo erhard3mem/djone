@@ -149,9 +149,11 @@ def submit():
         print("YouTube API connection starts...")
 
         # YOUTUBE playlist creator stuff
-        credentials = session.get('credentials')
-        if not credentials:
+        credentials_data = session.get('credentials')
+        if not credentials_data:
             return redirect(url_for('login'))
+
+        credentials = Credentials.from_authorized_user_info(credentials_data)
 
         # Step 1: Authenticate and authorize        
         #scopes = ["https://www.googleapis.com/auth/youtube"]
