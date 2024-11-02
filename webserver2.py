@@ -254,7 +254,7 @@ def login():
     )
     return redirect(auth_url)
 
-@app.route('/oauth2callback')
+"""@app.route('/oauth2callback')
 def oauth2callback():
     code = request.args.get('code')
     if code:
@@ -269,6 +269,34 @@ def oauth2callback():
         session['credentials'] = token_json  # Speichern der Credentials in der Session
         return redirect(url_for('submit'))
     return 'Fehler beim Anmelden.'
+"""
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    code = request.args.get('code')
+    if code:
+        token_response = requests.post(TOKEN_URL, data={
+            'code': code,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'redirect_uri': REDIRECT_URI,
+            'grant_type': 'authorization_code',
+        })
+        token_json = token_response.json()
+
+        # Make sure you're storing the necessary fields
+        session['credentials'] = {
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'refresh_token': token_json.get('refresh_token'),
+            'access_token': token_json.get('access_token'),
+            'token_uri': TOKEN_URL,
+            'scopes': token_json.get('scope').split(),  # Make sure to parse scopes properly
+            'expiry': token_json.get('expires_in')
+        }
+        return redirect(url_for('submit'))
+    return 'Fehler beim Anmelden.'
+
 
 @app.route('/profile')
 def profile():
