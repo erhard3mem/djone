@@ -46,7 +46,7 @@ app.config['SECRET_KEY'] = SECRET_KEY
 CORS(app, resources={r"/api/*": {"origins": "https://djone-mslf.onrender.com"}})
 
 
-#csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 
 @app.after_request
@@ -63,7 +63,7 @@ class ArtistsForm(FlaskForm):
     submit = SubmitField('Generate playlist')
 
 
-#@csrf.exempt
+@csrf.exempt
 @cross_origin(origins=['https://djone-mslf.onrender.com/'])
 @app.route('/', methods=['GET', 'POST'])
 def submit():
