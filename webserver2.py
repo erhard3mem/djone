@@ -180,13 +180,23 @@ def submit():
         #youtube = build('youtube', 'v3', credentials=credentials)
                 
         #flow = InstalledAppFlow.from_client_secrets_file("client_secret_945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com.json", scopes=scopes)
-        flow = InstalledAppFlow.from_client_secrets_file("client_secrets_render.json", scopes=scopes)
-        flow.fetch_token()
-        credentials = flow.credentials()
+        #flow = InstalledAppFlow.from_client_secrets_file("client_secrets_render.json", scopes=scopes)
+        #credentials = flow.run_console()
+
+
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'client_secrets_render.json', SCOPES)
+        creds = flow.run_console()
+
+        # Speichere die Anmeldedaten in einer Datei, um sie später zu nutzen
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+
+
         #credentials = flow.run_local_server()
 
         # Step 2: Initialize YouTube API client
-        youtube = build('youtube', 'v3', credentials=credentials)
+        youtube = build('youtube', 'v3', credentials=creds)
 
         # Step 3: Create a new playlist
         api_request = youtube.playlists().insert(
