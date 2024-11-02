@@ -159,6 +159,18 @@ def submit():
         if not credentials_data:
             return redirect(url_for('login'))
 
+        if not credentials_data.refresh_token:
+            return redirect(url_for('login'))
+
+        if not credentials_data.token_uri:
+            return redirect(url_for('login'))
+
+        if not credentials_data.client_id:
+            return redirect(url_for('login'))
+
+        if not credentials_data.client_secret:
+            return redirect(url_for('login'))
+
         credentials = Credentials.from_authorized_user_info(credentials_data)
 
         # Step 1: Authenticate and authorize        
@@ -285,6 +297,8 @@ def oauth2callback():
         })
         
         token_json = token_response.json()
+
+        print(token_json)
 
         # Calculate the expiration time
         expires_in = token_json.get('expires_in')
