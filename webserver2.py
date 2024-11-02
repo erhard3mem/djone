@@ -9,7 +9,8 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import os
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+#from google_auth_oauthlib.flow import InstalledAppFlow
+import google_auth_oauthlib.flow
 from googleapiclient.discovery import build
 from flask_cors import CORS, cross_origin
 import requests
@@ -159,35 +160,21 @@ def submit():
         # YOUTUBE playlist creator stuff
         #try:
 
-        """with open('log.txt', 'w') as file:
-            # Write the line to the file
-            file.write(credentials_data)"""
+        state = session['state']
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            'client_secrets_render.json',
+            scopes=['https://www.googleapis.com/auth/youtube'],
+            state=state)
+        flow.redirect_uri = url_for('oauth2callback', _external=True)
 
+        authorization_response = request.url
+        flow.fetch_token(authorization_response=authorization_response)
 
-        creds = Credentials.from_authorized_user_info(session["credentials"])
-        #creds = Credentials.from_authorized_user_file("client_secrets_render.json")
-        #credentials = Credentials.from_authorized_user_info(info={'refresh_token': "1//04guR8XBackEOCgYIARAAGAQSNwF-L9IrIe5HzFHn-nus79JFgHriUC8I5NT1noyAhtpJ-Ck72O--XVMjAUNeen9T0AG4YUp3pRE",'client_id': CLIENT_ID,'client_secret': CLIENT_SECRET})
-
-        # Step 1: Authenticate and authorize        
-        scps = ["https://www.googleapis.com/auth/youtube"]
-        # Initialize YouTube API client
-        #youtube = build('youtube', 'v3', credentials=credentials)
-                
-        #flow = InstalledAppFlow.from_client_secrets_file("client_secret_945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com.json", scopes=scopes)
-        #flow = InstalledAppFlow.from_client_secrets_file("client_secrets_render.json", scopes=scopes)
-        #credentials = flow.run_console()
-
-
-        #flow = InstalledAppFlow.from_client_secrets_file(
-        #    'client_secrets_render.json', SCOPES)
-        #creds = flow.run_console()
-
-        # Speichere die Anmeldedaten in einer Datei, um sie später zu nutzen
-        #with open('token.pickle', 'wb') as token:
-        #    pickle.dump(creds, token)
-
-
-        #credentials = flow.run_local_server()
+        # Store the credentials in the session.
+        # ACTION ITEM for developers:
+        #     Store user's access and refresh tokens in your data store if
+        #     incorporating this code into your real app.
+        creds = flow.credentials
 
         # Step 2: Initialize YouTube API client
         youtube = build('youtube', 'v3', credentials=creds, scopes=scps)
