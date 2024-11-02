@@ -131,10 +131,6 @@ form input[type="submit"]:hover {
     transition: transform 0.2s ease;
 }
 
-#myList li:hover {
-    transform: translateY(-3px);
-}
-
 #myList li a {
     color: #4a90e2;
     text-decoration: none;
@@ -151,7 +147,7 @@ form input[type="submit"]:hover {
 </head>
 <body>
 
-    <div>
+    <!--<div>
         <button id="login_button">Mit Google anmelden</button>
         <pre id="content"></pre>
 
@@ -166,7 +162,7 @@ form input[type="submit"]:hover {
                 document.getElementById('content').innerText = JSON.stringify(data, null, 2);
             }
         </script>
-    </div>
+    </div>-->
 
 
 
@@ -228,8 +224,8 @@ form input[type="submit"]:hover {
                         console.log(response)                        
 			            $('#loading').hide();
                         for(s in response) {
-                         //   $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
-                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
+                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                         //   $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
                         }            
                     },
                    error: function(xhr, status, error) {
