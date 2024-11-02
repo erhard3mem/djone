@@ -27,7 +27,7 @@ app.secret_key = 'REPLACE ME - this value is here as a placeholder.'
 
 @app.route('/')
 def index():
-  return 'hello'
+  return print_index_table()
 
 
 @app.route('/test')
@@ -36,11 +36,9 @@ def test_api_request():
         return flask.redirect('authorize')
 
     # Load credentials from the session.
-    credentials = google.oauth2.credentials.Credentials(
-        **flask.session['credentials'])
+    credentials = google.oauth2.credentials.Credentials(**flask.session['credentials'])
 
-    youtube = googleapiclient.discovery.build(
-        API_SERVICE_NAME, API_VERSION, credentials=credentials)
+    youtube = googleapiclient.discovery.build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
     api_request = youtube.playlists().insert(
         part="snippet,status",
@@ -65,7 +63,7 @@ def test_api_request():
     #              credentials in a persistent database instead.
     flask.session['credentials'] = credentials_to_dict(credentials)
 
-    return flask.jsonify(**files)
+    return flask.jsonify(playlist_id)
 
 
 @app.route('/authorize')
@@ -78,7 +76,8 @@ def authorize():
   # for the OAuth 2.0 client, which you configured in the API Console. If this
   # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
   # error.
-  flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+  flow.redirect_uri = 'https://djone-mslf.onrender.com/oauth2callback'
+  #flask.url_for('https://djone-mslf.onrender.com/oauth2callback', _external=True)
 
   authorization_url, state = flow.authorization_url(
       # Enable offline access so that you can refresh an access token without
