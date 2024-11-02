@@ -159,91 +159,89 @@ def submit():
         if not credentials_data:
             return redirect(url_for('login'))
 
-        if not credentials_data.refresh_token:
-            return redirect(url_for('login'))
+        playlist_id=''
 
-        if not credentials_data.token_uri:
-            return redirect(url_for('login'))
+        try:
+            credentials = Credentials.from_authorized_user_info(credentials_data)
 
-        if not credentials_data.client_id:
-            return redirect(url_for('login'))
+            # Step 1: Authenticate and authorize        
+            #scopes = ["https://www.googleapis.com/auth/youtube"]
+            # Initialize YouTube API client
+            youtube = build('youtube', 'v3', credentials=credentials)
+                    
+            #flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
+            #credentials = flow.run_local_server(port=0)
 
-        if not credentials_data.client_secret:
-            return redirect(url_for('login'))
+            # Step 2: Initialize YouTube API client
+            #youtube = build('youtube', 'v3', credentials=credentials)
 
-        credentials = Credentials.from_authorized_user_info(credentials_data)
-
-        # Step 1: Authenticate and authorize        
-        #scopes = ["https://www.googleapis.com/auth/youtube"]
-        # Initialize YouTube API client
-        youtube = build('youtube', 'v3', credentials=credentials)
-                
-        #flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
-        #credentials = flow.run_local_server(port=0)
-
-        # Step 2: Initialize YouTube API client
-        #youtube = build('youtube', 'v3', credentials=credentials)
-
-        # Step 3: Create a new playlist
-        api_request = youtube.playlists().insert(
-            part="snippet,status",
-            body={
-            "snippet": {
-                "title": "DJone playlist",
-                "description": "Created with YouTube API",
-                "tags": ["API", "YouTube"],
-                "defaultLanguage": "en"
-            },
-            "status": {
-                "privacyStatus": "public"
-            }
-            }
-        )
-        response = api_request.execute()
-        playlist_id = response["id"]
-        print("Created playlist ID:", playlist_id)
-
-        for i in indices_value:
-            print(indices_value);
-            print(songs_ordered[i]);
-            songs.append(songs_ordered[i])
-
-
-            # YouTube stuff
-            search_query = songs_ordered[i]
-            api_request = youtube.search().list(
-                q=search_query,
-                part="id",
-                type="video",
-                maxResults=1
-            )
-            response = api_request.execute()
-
-            # Get the video ID of the first search result
-            first_video_id = response["items"][0]["id"]["videoId"]
-            youtube_ids.append(first_video_id)
-
-            
-            #webbrowser.open("https://www.youtube.com/results?search_query="+songs_ordered[i])
-
-        for video_id in youtube_ids:
-            api_request = youtube.playlistItems().insert(
-                part="snippet",
+            # Step 3: Create a new playlist
+            api_request = youtube.playlists().insert(
+                part="snippet,status",
                 body={
-                    "snippet": {
-                        "playlistId": playlist_id,
-                        "resourceId": {
-                            "kind": "youtube#video",
-                            "videoId": video_id
-                        }
-                    }
+                "snippet": {
+                    "title": "DJone playlist",
+                    "description": "Created with YouTube API",
+                    "tags": ["API", "YouTube"],
+                    "defaultLanguage": "en"
+                },
+                "status": {
+                    "privacyStatus": "public"
+                }
                 }
             )
             response = api_request.execute()
-            print(f"Added video {video_id} to playlist.")
+            playlist_id = response["id"]
+            print("Created playlist ID:", playlist_id)
+
+            for i in indices_value:
+                print(indices_value);
+                print(songs_ordered[i]);
+                songs.append(songs_ordered[i])
+
+
+                # YouTube stuff
+                search_query = songs_ordered[i]
+                api_request = youtube.search().list(
+                    q=search_query,
+                    part="id",
+                    type="video",
+                    maxResults=1
+                )
+                response = api_request.execute()
+
+                # Get the video ID of the first search result
+                first_video_id = response["items"][0]["id"]["videoId"]
+                youtube_ids.append(first_video_id)
+
+                
+                #webbrowser.open("https://www.youtube.com/results?search_query="+songs_ordered[i])
+
+            for video_id in youtube_ids:
+                api_request = youtube.playlistItems().insert(
+                    part="snippet",
+                    body={
+                        "snippet": {
+                            "playlistId": playlist_id,
+                            "resourceId": {
+                                "kind": "youtube#video",
+                                "videoId": video_id
+                            }
+                        }
+                    }
+                )
+                response = api_request.execute()
+                print(f"Added video {video_id} to playlist.")
+                
+        except Exception as error:
+            print("An exception occurred:", error) 
+
 
         #return jsonify(songs)  
         return jsonify([playlist_id])
+
+
+
 
     return render_template('index.html', form=form)
 
