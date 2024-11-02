@@ -47,10 +47,11 @@ class ArtistsForm(FlaskForm):
 def submit():
     form = ArtistsForm()
 
-   # print("before VALIDATE_ON_SUBMIT")
+    
 
 
     if request.method == 'POST':
+        print("POST request received")
         # Action to be executed when the button is clicked
         artists = []
         if(form.name0.data != ""):
@@ -114,8 +115,8 @@ def submit():
                     song_indices.append(song_right);
             index+=1;
 
-
-        #print(song_indices);
+        print("songs ordered")
+        print(song_indices);
 
         indices_value = []
         for i in song_indices:   
@@ -132,7 +133,7 @@ def submit():
 
         youtube_ids = []
 
-
+        print("YouTube API connection starts...")
 
         # YOUTUBE playlist creator stuff
         
