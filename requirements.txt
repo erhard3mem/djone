@@ -1,6 +1,6 @@
-Flask==2.3.3
-Flask-WTF==1.1.1
-lyricsgenius==3.0.1
-scikit-learn==1.2.2
-google-auth-oauthlib==1.0.0
-google-api-python-client==2.103.0
+Flask
+Flask-WTF
+lyricsgenius
+scikit-learn
+google-auth-oauthlib
+google-api-python-client
