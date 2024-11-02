@@ -245,7 +245,7 @@ def login():
         f'client_id={CLIENT_ID}&'
         f'redirect_uri={REDIRECT_URI}&'
         'response_type=code&'
-        'scope=https://www.googleapis.com/auth/youtube.readonly'
+        'scope=https://www.googleapis.com/auth/youtube'
     )
     return redirect(auth_url)
 
