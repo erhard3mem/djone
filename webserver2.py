@@ -166,11 +166,12 @@ def submit():
 
         try:
 
-            with open('log.txt', 'w') as file:
+            """with open('log.txt', 'w') as file:
                 # Write the line to the file
-                file.write(credentials_data)
+                file.write(credentials_data)"""
 
-            credentials = Credentials.from_authorized_user_info(credentials_data)
+            #credentials = Credentials.from_authorized_user_info(credentials_data)
+            credentials = Credentials.from_authorized_user_file("client_secrets.json")
 
             # Step 1: Authenticate and authorize        
             #scopes = ["https://www.googleapis.com/auth/youtube"]
