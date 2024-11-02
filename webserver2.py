@@ -69,8 +69,7 @@ class ArtistsForm(FlaskForm):
 @csrf.exempt
 #@cross_origin(origins=['https://djone-mslf.onrender.com/'])
 @app.route('/', methods=['GET', 'POST'])
-def submit():
-  
+def submit():  
     form = ArtistsForm()
 
     if request.method == 'POST':
@@ -163,7 +162,7 @@ def submit():
         # YOUTUBE playlist creator stuff
         #try:
 
-        state = flask.session['state']
+        """state = flask.session['state']
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             'client_secrets_render.json',
             scopes=['https://www.googleapis.com/auth/youtube'],
@@ -178,6 +177,25 @@ def submit():
         #     Store user's access and refresh tokens in your data store if
         #     incorporating this code into your real app.
         creds = flow.credentials
+"""
+        authorization_url, state = flow.authorization_url(
+            # Enable offline access so that you can refresh an access token without
+            # re-prompting the user for permission. Recommended for web server apps.
+            access_type='offline',
+            # Enable incremental authorization. Recommended as a best practice.
+            include_granted_scopes='true')
+
+        creds = Credentials.from_authorized_user_info(credentials_data)
+        #credentials = Credentials.from_authorized_user_file("client_secret_945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com.json")
+        #credentials = Credentials.from_authorized_user_info(info={'refresh_token': "1//04guR8XBackEOCgYIARAAGAQSNwF-L9IrIe5HzFHn-nus79JFgHriUC8I5NT1noyAhtpJ-Ck72O--XVMjAUNeen9T0AG4YUp3pRE",'client_id': CLIENT_ID,'client_secret': CLIENT_SECRET})
+        # Step 1: Authenticate and authorize        
+        scopes = ["https://www.googleapis.com/auth/youtube"]
+        # Initialize YouTube API client
+        #youtube = build('youtube', 'v3', credentials=credentials)
+                
+        #flow = InstalledAppFlow.from_client_secrets_file("client_secret_945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com.json", scopes=scopes)
+        #flow = InstalledAppFlow.from_client_secrets_file("client_secrets_render.json", scopes=scopes)
+        #credentials = flow.run_console()
 
         # Step 2: Initialize YouTube API client
         youtube = build('youtube', 'v3', credentials=creds, scopes=scps)
@@ -297,6 +315,7 @@ def oauth2callback():
             'client_id': CLIENT_ID,
             'client_secret': CLIENT_SECRET,
             'redirect_uri': REDIRECT_URI,
+            'access_type': 'offline',
             'grant_type': 'authorization_code',
         })
         
