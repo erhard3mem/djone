@@ -42,9 +42,11 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = SECRET_KEY
 
-CORS(app)
+#CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://djone-mslf.onrender.com"}})
 
-csrf = CSRFProtect(app)
+
+#csrf = CSRFProtect(app)
 
 
 @app.after_request
@@ -61,8 +63,8 @@ class ArtistsForm(FlaskForm):
     submit = SubmitField('Generate playlist')
 
 
-@csrf.exempt
-#@cross_origin(origins=['https://djone-mslf.onrender.com/'])
+#@csrf.exempt
+@cross_origin(origins=['https://djone-mslf.onrender.com/'])
 @app.route('/', methods=['GET', 'POST'])
 def submit():
     form = ArtistsForm()
@@ -265,8 +267,7 @@ def oauth2callback():
         })
         token_json = token_response.json()
         session['credentials'] = token_json  # Speichern der Credentials in der Session
-        return redirect(url_for('profile'))
-        #return redirect(url_for('/'))
+        return redirect(url_for('submit'))
     return 'Fehler beim Anmelden.'
 
 @app.route('/profile')
