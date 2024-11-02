@@ -248,9 +248,8 @@ def submit():
     #except Exception as error:
     #    print("An exception occurred:", error) 
 
-
-    #return jsonify(songs)  
-    return jsonify([playlist_id])
+        #return jsonify(songs)  
+        return jsonify([playlist_id])
 
 
 
