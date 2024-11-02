@@ -270,6 +270,7 @@ def oauth2callback():
         return redirect(url_for('submit'))
     return 'Fehler beim Anmelden.'
 """
+from datetime import datetime, timedelta
 
 @app.route('/oauth2callback')
 def oauth2callback():
@@ -282,20 +283,27 @@ def oauth2callback():
             'redirect_uri': REDIRECT_URI,
             'grant_type': 'authorization_code',
         })
+        
         token_json = token_response.json()
 
-        # Make sure you're storing the necessary fields
+        # Calculate the expiration time
+        expires_in = token_json.get('expires_in')
+        expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
+
+        # Save credentials in session
         session['credentials'] = {
             'client_id': CLIENT_ID,
             'client_secret': CLIENT_SECRET,
             'refresh_token': token_json.get('refresh_token'),
             'access_token': token_json.get('access_token'),
             'token_uri': TOKEN_URL,
-            'scopes': token_json.get('scope').split(),  # Make sure to parse scopes properly
-            'expiry': token_json.get('expires_in')
+            'scopes': token_json.get('scope').split(),
+            'expiry': expiry_time.isoformat() + 'Z'  # Save as ISO 8601 string
         }
+
         return redirect(url_for('submit'))
-    return 'Fehler beim Anmelden.'
+    return 'Error during authentication.'
+
 
 
 @app.route('/profile')
