@@ -156,11 +156,11 @@ def submit():
         if not credentials:
             return redirect(url_for('login'))
 
+        # Step 1: Authenticate and authorize        
+        scopes = ["https://www.googleapis.com/auth/youtube"]
         # Initialize YouTube API client
-        youtube = build('youtube', 'v3', credentials=credentials)
-
-        # Step 1: Authenticate and authorize
-        #scopes = ["https://www.googleapis.com/auth/youtube"]
+        youtube = build('youtube', 'v3', credentials=credentials, scopes=scopes)
+                
         #flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
         #credentials = flow.run_local_server(port=0)
 
