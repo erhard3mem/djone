@@ -259,8 +259,8 @@ def oauth2callback():
         })
         token_json = token_response.json()
         session['credentials'] = token_json  # Speichern der Credentials in der Session
-        #return redirect(url_for('profile'))
-        return redirect(url_for('/'))
+        return redirect(url_for('profile'))
+        #return redirect(url_for('/'))
     return 'Fehler beim Anmelden.'
 
 @app.route('/profile')
@@ -268,7 +268,7 @@ def profile():
     credentials = session.get('credentials')
     if credentials:
         return f'Du bist angemeldet! Access Token: {credentials["access_token"]}'
-    return redirect(url_for('login'))
+    return redirect(url_for('submit'))
 
 @app.route('/api/subscriptions')
 def subscriptions():
