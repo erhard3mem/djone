@@ -13,6 +13,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from flask_cors import CORS, cross_origin
 import requests
+import json
 
 
 
@@ -162,8 +163,9 @@ def submit():
             # Write the line to the file
             file.write(credentials_data)"""
 
-        #credentials = Credentials.from_authorized_user_info(credentials_data)
-        creds = Credentials.from_authorized_user_file("client_secrets_render.json")
+
+        creds = Credentials.from_authorized_user_info(session["credentials"])
+        #creds = Credentials.from_authorized_user_file("client_secrets_render.json")
         #credentials = Credentials.from_authorized_user_info(info={'refresh_token': "1//04guR8XBackEOCgYIARAAGAQSNwF-L9IrIe5HzFHn-nus79JFgHriUC8I5NT1noyAhtpJ-Ck72O--XVMjAUNeen9T0AG4YUp3pRE",'client_id': CLIENT_ID,'client_secret': CLIENT_SECRET})
 
         # Step 1: Authenticate and authorize        
@@ -336,7 +338,7 @@ def oauth2callback():
 def profile():
     credentials = session.get('credentials')
     if credentials:
-        return f'Du bist angemeldet! Access Token: {credentials["access_token"]}'
+        return f'Du bist angemeldet! {json.dumps(credentials)}'
     return redirect(url_for('submit'))
 
 @app.route('/api/subscriptions')
