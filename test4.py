@@ -104,7 +104,8 @@ def oauth2callback():
   flow.redirect_uri = 'https://djone-mslf.onrender.com/oauth2callback'
 
   # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-  authorization_response = flask.request.url
+  authorization_response = flask.request.url.replace('http','https')
+  # ee
   flow.fetch_token(authorization_response=authorization_response)
 
   # Store credentials in the session.
@@ -179,7 +180,7 @@ if __name__ == '__main__':
   # When running locally, disable OAuthlib's HTTPs verification.
   # ACTION ITEM for developers:
   #     When running in production *do not* leave this option enabled.
-  os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+ # os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
   # Specify a hostname and port that are set as a valid redirect URI
   # for your API project in the Google API Console.
