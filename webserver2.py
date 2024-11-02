@@ -10,7 +10,6 @@ from wtforms.validators import DataRequired
 import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
 from flask_cors import CORS
 import requests
 
@@ -153,15 +152,20 @@ def submit():
         print("YouTube API connection starts...")
 
         # YOUTUBE playlist creator stuff
-        
+        credentials = session.get('credentials')
+        if not credentials:
+            return redirect(url_for('login'))
+
+        # Initialize YouTube API client
+        youtube = build('youtube', 'v3', credentials=credentials)
 
         # Step 1: Authenticate and authorize
-        scopes = ["https://www.googleapis.com/auth/youtube"]
-        flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
-        credentials = flow.run_local_server(port=0)
+        #scopes = ["https://www.googleapis.com/auth/youtube"]
+        #flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
+        #credentials = flow.run_local_server(port=0)
 
         # Step 2: Initialize YouTube API client
-        youtube = build('youtube', 'v3', credentials=credentials)
+        #youtube = build('youtube', 'v3', credentials=credentials)
 
         # Step 3: Create a new playlist
         api_request = youtube.playlists().insert(
