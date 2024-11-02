@@ -13,7 +13,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from flask_cors import CORS, cross_origin
 import requests
-from google.oauth2 import service_account
+
+
 
 
 
@@ -149,23 +150,45 @@ def submit():
                 songs_ordered.append(a.name + " : " + a.songs[i].title)
         
         songs = []
-
         youtube_ids = []
+        playlist_id=''
 
         print("YouTube API connection starts...")
 
-        # Pfad zur JSON-Datei mit dem privaten Schlüssel des Dienstkontos
-        SERVICE_ACCOUNT_FILE = 'djone-440513-9aa109a76e2f.json'
+        # YOUTUBE playlist creator stuff
+        #try:
 
-        # Berechtigungs-Scopes festlegen (z. B. für Google Sheets)
-        SCOPES = ['https://www.googleapis.com/auth/youtube']
+        """with open('log.txt', 'w') as file:
+            # Write the line to the file
+            file.write(credentials_data)"""
 
-        # Dienstkonto-Credentials laden
-        creds = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        #credentials = Credentials.from_authorized_user_info(credentials_data)
+        creds = Credentials.from_authorized_user_file("client_secrets_render.json")
+        #credentials = Credentials.from_authorized_user_info(info={'refresh_token': "1//04guR8XBackEOCgYIARAAGAQSNwF-L9IrIe5HzFHn-nus79JFgHriUC8I5NT1noyAhtpJ-Ck72O--XVMjAUNeen9T0AG4YUp3pRE",'client_id': CLIENT_ID,'client_secret': CLIENT_SECRET})
 
-        # Erstelle den Google Sheets-API-Service
-        youtube = build('youtube', 'v3', credentials=creds)
+        # Step 1: Authenticate and authorize        
+        scps = ["https://www.googleapis.com/auth/youtube"]
+        # Initialize YouTube API client
+        #youtube = build('youtube', 'v3', credentials=credentials)
+                
+        #flow = InstalledAppFlow.from_client_secrets_file("client_secret_945610874524-40pmbovkr6lch4cvvg0i8983v2njc5un.apps.googleusercontent.com.json", scopes=scopes)
+        #flow = InstalledAppFlow.from_client_secrets_file("client_secrets_render.json", scopes=scopes)
+        #credentials = flow.run_console()
+
+
+        #flow = InstalledAppFlow.from_client_secrets_file(
+        #    'client_secrets_render.json', SCOPES)
+        #creds = flow.run_console()
+
+        # Speichere die Anmeldedaten in einer Datei, um sie später zu nutzen
+        #with open('token.pickle', 'wb') as token:
+        #    pickle.dump(creds, token)
+
+
+        #credentials = flow.run_local_server()
+
+        # Step 2: Initialize YouTube API client
+        youtube = build('youtube', 'v3', credentials=creds, scopes=scps)
 
         # Step 3: Create a new playlist
         api_request = youtube.playlists().insert(
