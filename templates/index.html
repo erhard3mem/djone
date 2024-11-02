@@ -206,7 +206,8 @@ form input[type="submit"]:hover {
                         console.log(response)                        
 			            $('#loading').hide();
                         for(s in response) {
-                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                         //   $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
                         }            
                     },
                    error: function(xhr, status, error) {
