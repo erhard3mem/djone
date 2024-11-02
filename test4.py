@@ -104,7 +104,7 @@ def oauth2callback():
   flow.redirect_uri = 'https://djone-mslf.onrender.com/oauth2callback'
 
   # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-  authorization_response = flask.request.url.replace('http://', 'https://')
+  authorization_response = flask.request.url#.replace('http://', 'https://')
   # ee
   flow.fetch_token(authorization_response=authorization_response)
 
