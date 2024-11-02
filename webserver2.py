@@ -165,7 +165,7 @@ def submit():
             SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
         # Erstelle den Google Sheets-API-Service
-        service = build('youtube', 'v3', credentials=creds)
+        youtube = build('youtube', 'v3', credentials=creds)
 
         # Step 3: Create a new playlist
         api_request = youtube.playlists().insert(
