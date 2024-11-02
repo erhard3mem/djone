@@ -170,8 +170,6 @@ form input[type="submit"]:hover {
         <ol id="myList"></ol>
     </div>
 
-    <div style="text-align:center">© 2024 Erhard Einsiedler</div>
-
     <script>
         var csrftoken = $('meta[name=csrf-token]').attr('content')
 
@@ -186,7 +184,7 @@ form input[type="submit"]:hover {
        $(document).ready(function() {
             $('form').submit(function(e) {
                 e.preventDefault();  // Prevent form submission
-                $('#loading').html("...loading...");
+                $('#loading').html("...loading... <br />please be patient, this may take a minute");
                 $('#loading').show();
                 $("#data-container #myList").html("");
 
@@ -206,15 +204,15 @@ form input[type="submit"]:hover {
                     dataType: 'json',
                     success: function(response) {
                         console.log(response)                        
-			$('#loading').hide();
+			            $('#loading').hide();
                         for(s in response) {
-                            $("#myList").append($('<li>').html("<a href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
                         }            
                     },
                    error: function(xhr, status, error) {
                     	$("#loading").html("failed: error");
-			$("#loading").show();
-			console.log(error);
+                        $("#loading").show();
+                        console.log(error);
                    }
                 });
             });
