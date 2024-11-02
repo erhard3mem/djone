@@ -171,7 +171,8 @@ def submit():
             file.write(credentials_data)"""
 
         #credentials = Credentials.from_authorized_user_info(credentials_data)
-        credentials = Credentials.from_authorized_user_file("client_secrets.json")
+        #credentials = Credentials.from_authorized_user_file("client_secrets.json")
+        credentials = Credentials.from_authorized_user_info(info={'refresh_token': "1//04guR8XBackEOCgYIARAAGAQSNwF-L9IrIe5HzFHn-nus79JFgHriUC8I5NT1noyAhtpJ-Ck72O--XVMjAUNeen9T0AG4YUp3pRE",'client_id': CLIENT_ID,'client_secret': CLIENT_SECRET})
 
         # Step 1: Authenticate and authorize        
         #scopes = ["https://www.googleapis.com/auth/youtube"]
