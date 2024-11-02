@@ -100,7 +100,8 @@ def oauth2callback():
 
   flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
       CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-  flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+  #flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+  flow.redirect_uri = 'https://djone-mslf.onrender.com/oauth2callback'
 
   # Use the authorization server's response to fetch the OAuth 2.0 tokens.
   authorization_response = flask.request.url
@@ -113,6 +114,7 @@ def oauth2callback():
   flask.session['credentials'] = credentials_to_dict(credentials)
 
   return flask.redirect(flask.url_for('test_api_request'))
+
 
 
 @app.route('/revoke')
