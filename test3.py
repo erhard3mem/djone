@@ -69,10 +69,7 @@ class ArtistsForm(FlaskForm):
 @app.route('/', methods=['GET', 'POST'])
 def submit():
     
-    
-
-
-    #state = session['state']
+    state = session['state']
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         'client_secrets_render.json',
         scopes=['https://www.googleapis.com/auth/youtube'],
