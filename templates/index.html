@@ -170,6 +170,8 @@ form input[type="submit"]:hover {
         <ol id="myList"></ol>
     </div>
 
+    <div style="text-align:center">© 2024 Erhard Einsiedler</div>
+
     <script>
         var csrftoken = $('meta[name=csrf-token]').attr('content')
 
@@ -184,8 +186,9 @@ form input[type="submit"]:hover {
        $(document).ready(function() {
             $('form').submit(function(e) {
                 e.preventDefault();  // Prevent form submission
-		$('#loading').html("...loading...");
-		$('#loading').show();
+                $('#loading').html("...loading...");
+                $('#loading').show();
+                $("#data-container #myList").html("");
 
                 // Collect form data
                 var formData = {
