@@ -70,10 +70,11 @@ class ArtistsForm(FlaskForm):
 #@cross_origin(origins=['https://djone-mslf.onrender.com/'])
 @app.route('/', methods=['GET', 'POST'])
 def submit():
+  
     form = ArtistsForm()
 
     if request.method == 'POST':
-        print("POST request received")
+        """print("POST request received")
         # Action to be executed when the button is clicked
         artists = []
         if(form.name0.data != ""):
@@ -150,8 +151,10 @@ def submit():
             songs_len = len(a.songs)
             for i in range(0,songs_len):
                 songs_ordered.append(a.name + " : " + a.songs[i].title)
-        
+        """
         songs = []
+        indices_value = [0]
+        songs_ordered = ["Depeche Mode : Enjoy the silence"]
         youtube_ids = []
         playlist_id=''
 
@@ -160,7 +163,7 @@ def submit():
         # YOUTUBE playlist creator stuff
         #try:
 
-        state = session['state']
+        state = flask.session['state']
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             'client_secrets_render.json',
             scopes=['https://www.googleapis.com/auth/youtube'],
