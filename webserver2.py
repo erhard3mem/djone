@@ -156,12 +156,20 @@ def submit():
 
         # YOUTUBE playlist creator stuff
         credentials_data = session.get('credentials')
+
+        print(credentials_data)
+
         if not credentials_data:
             return redirect(url_for('login'))
 
         playlist_id=''
 
         try:
+
+            with open('log.txt', 'w') as file:
+                # Write the line to the file
+                file.write(credentials_data)
+
             credentials = Credentials.from_authorized_user_info(credentials_data)
 
             # Step 1: Authenticate and authorize        
@@ -171,6 +179,9 @@ def submit():
                     
             #flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=scopes)
             #credentials = flow.run_local_server(port=0)
+
+            
+
 
             # Step 2: Initialize YouTube API client
             #youtube = build('youtube', 'v3', credentials=credentials)
@@ -232,7 +243,7 @@ def submit():
                 )
                 response = api_request.execute()
                 print(f"Added video {video_id} to playlist.")
-                
+
         except Exception as error:
             print("An exception occurred:", error) 
 
