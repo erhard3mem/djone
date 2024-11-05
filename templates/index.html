@@ -185,56 +185,11 @@ form input[type="submit"]:hover {
             .replace(/\//g, '_')
             .replace(/=+$/, '');
         }
-      
-        // If there's an access token, try an API request.
-        // Otherwise, start OAuth 2.0 flow.
-        function createPlaylist(video_ids) {
-            let pid = '';
-            console.log(video_ids);
-            var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
-            if (params && params['access_token']) {
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST',
-                                    'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
-                        
-                xhr.onreadystatechange = function (e) {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-//                      
-                        let playlist_id = (JSON.parse(xhr.response)).id;
-                        pid = playlist_id;
 
-                        for(let i = 0; i < video_ids.length; i++) {
-                            let id = video_ids[i]
-                            let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
-                            var xhr_v = new XMLHttpRequest();
-                            xhr_v.open('POST',
-                                  'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
-                                    
-                            xhr_v.onreadystatechange = function (e) {
-                                if (xhr_v.readyState === 4 && xhr_v.status === 200) {
-                                    
-                                }
-                            }
-
-                            xhr_v.send(request);
-                        }                            
-                    } else if (xhr.readyState === 4 && xhr.status === 401) {
-                        // Token invalid, so prompt for user permission.
-                        oauth2SignIn();
-                    }
-                };
-                xhr.send('{     "snippet": {         "title": "DJone playlist",         "description": "no description",         "tags": [             "sample playlist",             "API call"         ],         "defaultLanguage": "en"     },     "status": {         "privacyStatus": "private"     } }');
-            } else {
-                oauth2SignIn();
-            }
-
-            return pid;
-        }
-      
-        /*
+         /*
          * Create form to request access token from Google's OAuth 2.0 server.
          */
-        function oauth2SignIn() {
+         function oauth2SignIn() {
           // create random state value and store in local storage
           var state = generateCryptoRandomState();
           localStorage.setItem('state', state);
@@ -269,6 +224,55 @@ form input[type="submit"]:hover {
           form.submit();
         }
       
+      
+        // If there's an access token, try an API request.
+        // Otherwise, start OAuth 2.0 flow.
+        function createPlaylist(video_ids) {
+            return new Promise((resolve, reject) => {
+                let pid = '';
+                console.log(video_ids);
+                var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+                if (params && params['access_token']) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST',
+                                        'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
+                            
+                    xhr.onreadystatechange = function (e) {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+    //                      
+                            let playlist_id = (JSON.parse(xhr.response)).id;
+                            pid = playlist_id;
+
+                            for(let i = 0; i < video_ids.length; i++) {
+                                let id = video_ids[i]
+                                let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
+                                var xhr_v = new XMLHttpRequest();
+                                xhr_v.open('POST',
+                                    'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                                        
+                                xhr_v.onreadystatechange = function (e) {
+                                    if (xhr_v.readyState === 4 && xhr_v.status === 200) {
+                                        console.log("playlistItems successful")
+                                    }
+                                }
+
+                                xhr_v.send(request);
+                            }
+                            
+                            resolve(playlist_id);
+                        } else if (xhr.readyState === 4 && xhr.status === 401) {
+                            // Token invalid, so prompt for user permission.
+                            oauth2SignIn();
+                        }
+                    };
+                    xhr.send('{     "snippet": {         "title": "DJone playlist",         "description": "no description",         "tags": [             "sample playlist",             "API call"         ],         "defaultLanguage": "en"     },     "status": {         "privacyStatus": "private"     } }');
+                } else {
+                    oauth2SignIn();
+                }
+
+            });
+            
+        }
       
         async function getYTIdsBySearchStrings(arr) {
             const ids = [];
