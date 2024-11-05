@@ -147,25 +147,170 @@ form input[type="submit"]:hover {
 </head>
 <body>
 
-    <!--<div>
-        <button id="login_button">Mit Google anmelden</button>
-        <pre id="content"></pre>
+    <script>
+        var YOUR_CLIENT_ID = '945610874524-6vajmjoc95hp92gunsp2al19qot0eucl.apps.googleusercontent.com';
+        var YOUR_REDIRECT_URI = 'https://youtube123-test.onrender.com';
+      
+        // Parse query string to see if page request is coming from OAuth 2.0 server.
+        var fragmentString = location.hash.substring(1);
+        var params = {};
+        var regex = /([^&=]+)=([^&]*)/g, m;
+        while (m = regex.exec(fragmentString)) {
+          params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        if (Object.keys(params).length > 0 && params['state']) {
+          if (params['state'] == localStorage.getItem('state')) {
+            localStorage.setItem('oauth2-test-params', JSON.stringify(params) );
+      
+            trySampleRequest();
+          } else {
+            console.log('State mismatch. Possible CSRF attack');
+          }
+        }
+      
+        // Function to generate a random state value
+        function generateCryptoRandomState() {
+          const randomValues = new Uint32Array(2);
+          window.crypto.getRandomValues(randomValues);
+      
+          // Encode as UTF-8
+          const utf8Encoder = new TextEncoder();
+          const utf8Array = utf8Encoder.encode(
+            String.fromCharCode.apply(null, randomValues)
+          );
+      
+          // Base64 encode the UTF-8 data
+          return btoa(String.fromCharCode.apply(null, utf8Array))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+        }
+      
+        // If there's an access token, try an API request.
+        // Otherwise, start OAuth 2.0 flow.
+        function createPlaylist(video_ids) {
+            let pid = '';
+            console.log(video_ids);
+            var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+            if (params && params['access_token']) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST',
+                                    'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                        
+                xhr.onreadystatechange = function (e) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+//                      
+                        let playlist_id = (JSON.parse(xhr.response)).id;
+                        pid = playlist_id;
 
-        <script>
-            document.getElementById('login_button').onclick = function() {
-                window.location.href = '/login'; // Leite zur Flask-Login-Route weiter
+                        for(let i = 0; i < video_ids.length; i++) {
+                            let id = video_ids[i]
+                            let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
+                            var xhr_v = new XMLHttpRequest();
+                            xhr_v.open('POST',
+                                                'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                                    
+                            xhr_v.onreadystatechange = function (e) {
+                                if (xhr_v.readyState === 4 && xhr_v.status === 200) {
+                                    
+                                }
+                            }
+
+                            xhr_v.send(request);
+                        }                            
+                    } else if (xhr.readyState === 4 && xhr.status === 401) {
+                        // Token invalid, so prompt for user permission.
+                        oauth2SignIn();
+                    }
+                };
+                xhr.send('{     "snippet": {         "title": "DJone playlist",         "description": "no description",         "tags": [             "sample playlist",             "API call"         ],         "defaultLanguage": "en"     },     "status": {         "privacyStatus": "private"     } }');
+            } else {
+                oauth2SignIn();
+            }
+
+            return pid;
+        }
+      
+        /*
+         * Create form to request access token from Google's OAuth 2.0 server.
+         */
+        function oauth2SignIn() {
+          // create random state value and store in local storage
+          var state = generateCryptoRandomState();
+          localStorage.setItem('state', state);
+      
+          // Google's OAuth 2.0 endpoint for requesting an access token
+          var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+      
+          // Create element to open OAuth 2.0 endpoint in new window.
+          var form = document.createElement('form');
+          form.setAttribute('method', 'GET'); // Send as a GET request.
+          form.setAttribute('action', oauth2Endpoint);
+      
+          // Parameters to pass to OAuth 2.0 endpoint.
+          var params = {'client_id': YOUR_CLIENT_ID,
+                        'redirect_uri': YOUR_REDIRECT_URI,
+                        'scope': 'https://www.googleapis.com/auth/youtube.force-ssl',
+                        'state': state,
+                        'include_granted_scopes': 'true',
+                        'response_type': 'token'};
+      
+          // Add form parameters as hidden input values.
+          for (var p in params) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'hidden');
+            input.setAttribute('name', p);
+            input.setAttribute('value', params[p]);
+            form.appendChild(input);
+          }
+      
+          // Add form to page and submit it to open the OAuth 2.0 endpoint.
+          document.body.appendChild(form);
+          form.submit();
+        }
+      
+      
+        function getYouTubeIDbySearch(str) {
+            
+            let vid = '';
+
+            // Erstellen einer neuen XHR-Anfrage
+            const xhr = new XMLHttpRequest();
+            
+            var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+            const at = params['access_token'];
+
+            xhr.open('GET', `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(str)}&type=video&maxResults=1&access_token=${at}`, true);
+           // xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken); // Zugangstoken im Header
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.items && response.items.length > 0) {
+                            const videoId = response.items[0].id.videoId;
+                            console.log("Video ID:", videoId);
+                            vid = videoId;
+                        } else {
+                            console.log("No videos found.");                            
+                        }
+                    } else if (xhr.status === 401) {
+                        console.log("Unauthorized: Invalid or expired token.");
+                    } else {
+                        console.log("Error:", xhr.responseText);
+                    }
+                }
             };
 
-            async function fetchSubscriptions() {
-                const response = await fetch('/api/subscriptions');
-                const data = await response.json();
-                document.getElementById('content').innerText = JSON.stringify(data, null, 2);
-            }
-        </script>
-    </div>-->
+            xhr.send();
 
-
-
+            return vid;
+            
+        }
+      
+      
+      
+      </script>
 
 
     <h1>DJone</h1>
@@ -202,9 +347,12 @@ form input[type="submit"]:hover {
        $(document).ready(function() {
             $('form').submit(function(e) {
                 e.preventDefault();  // Prevent form submission
+                
                 $('#loading').html("...loading... <br />please be patient, this may take a minute");
                 $('#loading').show();
                 $("#data-container #myList").html("");
+
+                let ids = []
 
                 // Collect form data
                 var formData = {
@@ -224,9 +372,19 @@ form input[type="submit"]:hover {
                         console.log(response)                        
 			            $('#loading').hide();
                         for(s in response) {
-                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
-                         //   $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
-                        }            
+                            //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                            //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
+
+                            console.log(s);
+
+                            let id = getYouTubeIDbySearch(s);
+                            ids.push(id)
+                        }
+                        
+                        let pid = createPlaylist(ids);
+                        console.log(pid);
+
+                        $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+pid+"'>Your DJone YouTube playlist</a>"));
                     },
                    error: function(xhr, status, error) {
                     	$("#loading").html("failed: error");
