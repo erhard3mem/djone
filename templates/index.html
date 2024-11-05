@@ -271,18 +271,15 @@ form input[type="submit"]:hover {
       
       
         async function getYTIdsBySearchStrings(arr) {
-            return new Promise((resolve, reject) => {                
-                let ids = []
-                for(let i = 0; i<arr.length; i++) {
-                    getYouTubeIDbySearch(arr[i]).then(d=>{
-                        ids.push(d);
-                    })
-                }
-                resolve(ids);
-            });
+            const ids = [];
+            for (const searchString of arr) {
+                const id = await getYouTubeIDbySearch(searchString);
+                ids.push(id);
+            }
+            return ids;
         }
 
-        function getYouTubeIDbySearch(str) {
+        async function getYouTubeIDbySearch(str) {
             return new Promise((resolve, reject) => {
                 const params = JSON.parse(localStorage.getItem('oauth2-test-params'));
 
@@ -395,12 +392,14 @@ form input[type="submit"]:hover {
                             vids.push(response[i])
                         }
 
-                        getYTIdsBySearchStrings(vids).then(d=>{
-                            let pid = createPlaylist(d);
-                            console.log(d);
+                        getYTIdsBySearchStrings(vids).then( d => {
+                            createPlaylist(d).then( x => {
+                                $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+x+"'>Your DJone YouTube playlist</a>"));
+                                console.log(x);
+                            });                            
                         });
 
-                        $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+pid+"'>Your DJone YouTube playlist</a>"));
+                        
                     },
                    error: function(xhr, status, error) {
                     	$("#loading").html("failed: error");
