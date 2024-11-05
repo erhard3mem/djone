@@ -271,7 +271,7 @@ form input[type="submit"]:hover {
     //                      
                             let playlist_id = (JSON.parse(xhr.response)).id;
                             for(let i = 0; i < video_ids.length; i++) {
-                                insertInPlaylist(playlist_id,video_ids[i]).then(()=>wait(500));                                    
+                                insertInPlaylist(playlist_id,video_ids[i]).then(()=>wait(1500));                                    
                             }
                             
                             resolve(playlist_id);
