@@ -161,8 +161,8 @@ form input[type="submit"]:hover {
         if (Object.keys(params).length > 0 && params['state']) {
           if (params['state'] == localStorage.getItem('state')) {
             localStorage.setItem('oauth2-test-params', JSON.stringify(params) );
-      
-            trySampleRequest();
+
+            //...
           } else {
             console.log('State mismatch. Possible CSRF attack');
           }
@@ -195,7 +195,7 @@ form input[type="submit"]:hover {
             if (params && params['access_token']) {
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST',
-                                    'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                                    'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
                         
                 xhr.onreadystatechange = function (e) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
@@ -207,8 +207,8 @@ form input[type="submit"]:hover {
                             let id = video_ids[i]
                             let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
                             var xhr_v = new XMLHttpRequest();
-                            xhr_v.open('POST',
-                                                'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                            xhr_v.open('PUT',
+                                  'https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
                                     
                             xhr_v.onreadystatechange = function (e) {
                                 if (xhr_v.readyState === 4 && xhr_v.status === 200) {
