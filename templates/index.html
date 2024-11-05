@@ -376,10 +376,11 @@ form input[type="submit"]:hover {
                     success: function(response) {
                         console.log(response)                        
 			            $('#loading').hide();
-                        for(s in response) {
+                        for(let i = 0; i < response.length; i++) {
                             //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
                             //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
 
+                            let s = response[i];
                             console.log(s);
 
                             let id = getYouTubeIDbySearch(s);
