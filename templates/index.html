@@ -271,40 +271,45 @@ form input[type="submit"]:hover {
       
       
         function getYouTubeIDbySearch(str) {
-            
-            let vid = '';
-
-            // Erstellen einer neuen XHR-Anfrage
-            const xhr = new XMLHttpRequest();
-            
             var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
-            const at = params['access_token'];
+            if (params && params['access_token']) {
+                let vid = '';
 
-            xhr.open('GET', `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(str)}&type=video&maxResults=1&access_token=${at}`, true);
-           // xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken); // Zugangstoken im Header
+                // Erstellen einer neuen XHR-Anfrage
+                const xhr = new XMLHttpRequest();
+                
+                var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+                const at = params['access_token'];
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.items && response.items.length > 0) {
-                            const videoId = response.items[0].id.videoId;
-                            console.log("Video ID:", videoId);
-                            vid = videoId;
+                xhr.open('GET', `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(str)}&type=video&maxResults=1&access_token=${at}`, true);
+                // xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken); // Zugangstoken im Header
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.items && response.items.length > 0) {
+                                const videoId = response.items[0].id.videoId;
+                                console.log("Video ID:", videoId);
+                                vid = videoId;
+                            } else {
+                                console.log("No videos found.");                            
+                            }
+                        } else if (xhr.status === 401) {
+                            console.log("Unauthorized: Invalid or expired token.");
+                            oauth2SignIn();
                         } else {
-                            console.log("No videos found.");                            
+                            console.log("Error:", xhr.responseText);
                         }
-                    } else if (xhr.status === 401) {
-                        console.log("Unauthorized: Invalid or expired token.");
-                    } else {
-                        console.log("Error:", xhr.responseText);
                     }
-                }
-            };
+                };
 
-            xhr.send();
+                xhr.send();
 
-            return vid;
+                return vid;
+            } else {
+                oauth2SignIn();
+            }
             
         }
       
