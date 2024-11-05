@@ -167,6 +167,10 @@ form input[type="submit"]:hover {
             console.log('State mismatch. Possible CSRF attack');
           }
         }
+
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
       
         // Function to generate a random state value
         function generateCryptoRandomState() {
@@ -224,6 +228,31 @@ form input[type="submit"]:hover {
           form.submit();
         }
       
+
+        function insertInPlaylist(pid,vid) {
+            return new Promise((resolve, reject) => {    
+                var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+                if (params && params['access_token']) {
+                    var xhr = new XMLHttpRequest();
+                    
+                    let request = '{  "snippet": {   "playlistId": "'+pid+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+vid+'"   }  }  }';
+                    var xhr_v = new XMLHttpRequest();
+                    xhr_v.open('POST',
+                        'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                            
+                    xhr_v.onreadystatechange = function (e) {
+                        if (xhr_v.readyState === 4 && xhr_v.status === 200) {
+                            console.log("playlistItems successful")
+                        }
+                    }
+                    xhr_v.send(request);
+                    
+                    resolve();
+                } else if (xhr.readyState === 4 && xhr.status === 401) {
+                    oauth2SignIn();
+                }
+            });
+        }
       
         // If there's an access token, try an API request.
         // Otherwise, start OAuth 2.0 flow.
@@ -241,22 +270,8 @@ form input[type="submit"]:hover {
                         if (xhr.readyState === 4 && xhr.status === 200) {
     //                      
                             let playlist_id = (JSON.parse(xhr.response)).id;
-                            pid = playlist_id;
-
                             for(let i = 0; i < video_ids.length; i++) {
-                                let id = video_ids[i]
-                                let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
-                                var xhr_v = new XMLHttpRequest();
-                                xhr_v.open('POST',
-                                    'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
-                                        
-                                xhr_v.onreadystatechange = function (e) {
-                                    if (xhr_v.readyState === 4 && xhr_v.status === 200) {
-                                        console.log("playlistItems successful")
-                                    }
-                                }
-
-                                xhr_v.send(request);
+                                insertInPlaylist(playlist_id,video_ids[i]).then(()=>wait(500));                                    
                             }
                             
                             resolve(playlist_id);
