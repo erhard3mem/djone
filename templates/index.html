@@ -207,7 +207,7 @@ form input[type="submit"]:hover {
                             let id = video_ids[i]
                             let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
                             var xhr_v = new XMLHttpRequest();
-                            xhr_v.open('PUT',
+                            xhr_v.open('POST',
                                   'https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
                                     
                             xhr_v.onreadystatechange = function (e) {
