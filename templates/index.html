@@ -270,19 +270,30 @@ form input[type="submit"]:hover {
         }
       
       
+        async function getYTIdsBySearchStrings(arr) {
+            let ids = []
+
+            for(let i = 0; i<arr.length; i++) {
+                ids.push(await getYouTubeIDbySearch(arr[i]))
+            }
+
+            return ids;
+        }
+
         function getYouTubeIDbySearch(str) {
-            var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
-            if (params && params['access_token']) {
-                let vid = '';
+            return new Promise((resolve, reject) => {
+                const params = JSON.parse(localStorage.getItem('oauth2-test-params'));
 
-                // Erstellen einer neuen XHR-Anfrage
+                if (!params || !params['access_token']) {
+                    oauth2SignIn();
+                    return reject("User is not authenticated");
+                }
+
+                const accessToken = params['access_token'];
+
+                // Create a new XHR request
                 const xhr = new XMLHttpRequest();
-                
-                var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
-                const at = params['access_token'];
-
-                xhr.open('GET', `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(str)}&type=video&maxResults=1&access_token=${at}`, true);
-                // xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken); // Zugangstoken im Header
+                xhr.open('GET', `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(str)}&type=video&maxResults=1&access_token=${accessToken}`, true);
 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === 4) {
@@ -291,27 +302,26 @@ form input[type="submit"]:hover {
                             if (response.items && response.items.length > 0) {
                                 const videoId = response.items[0].id.videoId;
                                 console.log("Video ID:", videoId);
-                                vid = videoId;
+                                resolve(videoId); // Resolve the promise with the video ID
                             } else {
-                                console.log("No videos found.");                            
+                                console.log("No videos found.");
+                                resolve(null); // Resolve with null if no video was found
                             }
                         } else if (xhr.status === 401) {
                             console.log("Unauthorized: Invalid or expired token.");
                             oauth2SignIn();
+                            reject("Unauthorized access"); // Reject the promise if unauthorized
                         } else {
                             console.log("Error:", xhr.responseText);
+                            reject("Error: " + xhr.responseText); // Reject with the error message
                         }
                     }
                 };
 
                 xhr.send();
-
-                return vid;
-            } else {
-                oauth2SignIn();
-            }
-            
+            });
         }
+
       
       
       
@@ -357,7 +367,7 @@ form input[type="submit"]:hover {
                 $('#loading').show();
                 $("#data-container #myList").html("");
 
-                let ids = []
+                let vids = []
 
                 // Collect form data
                 var formData = {
@@ -380,12 +390,10 @@ form input[type="submit"]:hover {
                             //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
                             //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
 
-                            let s = response[i];
-                            console.log(s);
-
-                            let id = getYouTubeIDbySearch(s);
-                            ids.push(id)
+                            vids.push(response[i])
                         }
+
+                        let ids = getYTIdsBySearchStrings(vids);
                         
                         let pid = createPlaylist(ids);
                         console.log(pid);
