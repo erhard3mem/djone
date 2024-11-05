@@ -208,7 +208,7 @@ form input[type="submit"]:hover {
                             let request = '{  "snippet": {   "playlistId": "'+playlist_id+'",    "resourceId": {   "kind": "youtube#video",   "videoId": "'+id+'"   }  }  }';
                             var xhr_v = new XMLHttpRequest();
                             xhr_v.open('POST',
-                                  'https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
+                                  'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
                                     
                             xhr_v.onreadystatechange = function (e) {
                                 if (xhr_v.readyState === 4 && xhr_v.status === 200) {
@@ -271,13 +271,15 @@ form input[type="submit"]:hover {
       
       
         async function getYTIdsBySearchStrings(arr) {
-            let ids = []
-
-            for(let i = 0; i<arr.length; i++) {
-                ids.push(await getYouTubeIDbySearch(arr[i]))
-            }
-
-            return ids;
+            return new Promise((resolve, reject) => {                
+                let ids = []
+                for(let i = 0; i<arr.length; i++) {
+                    getYouTubeIDbySearch(arr[i]).then(d=>{
+                        ids.push(d);
+                    })
+                }
+                resolve(ids);
+            });
         }
 
         function getYouTubeIDbySearch(str) {
@@ -393,10 +395,10 @@ form input[type="submit"]:hover {
                             vids.push(response[i])
                         }
 
-                        let ids = getYTIdsBySearchStrings(vids);
-                        
-                        let pid = createPlaylist(ids);
-                        console.log(pid);
+                        getYTIdsBySearchStrings(vids).then(d=>{
+                            let pid = createPlaylist(d);
+                            console.log(d);
+                        });
 
                         $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+pid+"'>Your DJone YouTube playlist</a>"));
                     },
