@@ -266,12 +266,13 @@ form input[type="submit"]:hover {
                     xhr.open('POST',
                                         'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
                             
-                    xhr.onreadystatechange = function (e) {
+                    xhr.onreadystatechange = async function (e) {
                         if (xhr.readyState === 4 && xhr.status === 200) {
     //                      
                             let playlist_id = (JSON.parse(xhr.response)).id;
                             for(let i = 0; i < video_ids.length; i++) {
-                                insertInPlaylist(playlist_id,video_ids[i]).then(()=>wait(1500));                                    
+                                await insertInPlaylist(playlist_id,video_ids[i]);  
+                                await wait(800);                                 
                             }
                             
                             resolve(playlist_id);
