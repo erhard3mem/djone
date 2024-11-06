@@ -5,26 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;1,400&display=swap');
-       /* body {
-            font-family: Roboto;
-        }
-        h1 {
-            padding:20px;
-            background-color: aquamarine;
-            margin:0;
-        }
-        form {
-            padding:20px;
-            background-color:azure;
-        }
-        #data-container {            
-            padding:20px;
-            background-color: aqua;
-        }
-	#loading {
-	  display:none;
-	}*/
-        /* Reset default styling */
+
 * {
     margin: 0;
     padding: 0;
@@ -70,6 +51,7 @@ form label {
     margin-bottom: 0.25rem;
 }
 
+form button,
 form input[type="text"],
 form input[type="submit"] {
     padding: 0.75rem;
@@ -85,6 +67,7 @@ form input[type="text"]:focus {
     border-color: #4a90e2;
 }
 
+form button,
 form input[type="submit"] {
     background-color: #4a90e2;
     color: white;
@@ -349,7 +332,6 @@ form input[type="submit"]:hover {
 
     <h1>DJone</h1>
 
-    <button onclick="oauth2SignIn()">YouTube - Einloggen</button>
     
     <form method="POST" action="/">
         {{ form.csrf_token }}
@@ -359,7 +341,9 @@ form input[type="submit"]:hover {
         {{ form.name3.label }} {{ form.name3 }}<br />
         {{ form.name4.label }} {{ form.name4 }}<br /><br />
         {{ form.submit }}
-    </form>
+        <br /><br />
+        <button onclick="oauth2SignIn()">YouTube - Einloggen</button>
+       </form>
     
     <div id="loading">
         ...loading...
@@ -413,6 +397,8 @@ form input[type="submit"]:hover {
 
                             vids.push(response[i])
                         }
+
+                        $('#loading').html("creating playlist... wait a moment");
 
                         getYTIdsBySearchStrings(vids).then( d => {
                             createPlaylist(d).then( x => {
