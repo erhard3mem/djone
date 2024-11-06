@@ -335,10 +335,10 @@ form input[type="submit"]:hover {
     <div>
 
         <form id="oauthform">        
-            <button onclick="oauth2SignIn()">YouTube - Einloggen</button>
+            <button onclick="oauth2SignIn()">YouTube - Login</button>
         </form>
 
-        <form method="POST" action="/">
+        <form style="width:500px" method="POST" action="/">
             {{ form.csrf_token }}
             {{ form.name0.label }} {{ form.name0 }}<br />
             {{ form.name1.label }} {{ form.name1 }}<br />
