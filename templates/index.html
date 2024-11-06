@@ -332,18 +332,23 @@ form input[type="submit"]:hover {
 
     <h1>DJone</h1>
 
-    
-    <form method="POST" action="/">
-        {{ form.csrf_token }}
-        {{ form.name0.label }} {{ form.name0 }}<br />
-        {{ form.name1.label }} {{ form.name1 }}<br />
-        {{ form.name2.label }} {{ form.name2 }}<br />
-        {{ form.name3.label }} {{ form.name3 }}<br />
-        {{ form.name4.label }} {{ form.name4 }}<br /><br />
-        {{ form.submit }}
-        <br /><br />
-        <button onclick="oauth2SignIn()">YouTube - Einloggen</button>
-       </form>
+    <div style="width:500px">
+
+        <form id="oauthform">        
+            <button onclick="oauth2SignIn()">YouTube - Einloggen</button>
+        </form>
+
+        <form method="POST" action="/">
+            {{ form.csrf_token }}
+            {{ form.name0.label }} {{ form.name0 }}<br />
+            {{ form.name1.label }} {{ form.name1 }}<br />
+            {{ form.name2.label }} {{ form.name2 }}<br />
+            {{ form.name3.label }} {{ form.name3 }}<br />
+            {{ form.name4.label }} {{ form.name4 }}<br /><br />
+            {{ form.submit }}        
+        </form>
+        
+    </div>  
     
     <div id="loading">
         ...loading...
@@ -363,6 +368,13 @@ form input[type="submit"]:hover {
                 }
             }
         })
+
+        const testparams = JSON.parse(localStorage.getItem('oauth2-test-params'));
+        if (testparams && testparams['access_token']) {
+            $("#oauthform").style("display","none") 
+        }
+
+
 
        $(document).ready(function() {
             $('form').submit(function(e) {
