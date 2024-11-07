@@ -223,7 +223,6 @@ form input[type="submit"]:hover {
                             
                     xhr_v.onreadystatechange = function (e) {
                         if (xhr_v.status === 200) {
-                            console.log("playlistItems successful");
                             resolve();
                         }else {
                             throw new Error("playlistItems failed");
@@ -252,11 +251,12 @@ form input[type="submit"]:hover {
                                 let success = false;
                                 while(!success){
                                     try {
-                                        await insertInPlaylist(playlist_id,video_ids[i]);                                                                              
+                                        await insertInPlaylist(playlist_id,video_ids[i]);                                            
                                     }catch(err){                                    
                                         console.log("insert into playlist failed")
                                         continue
-                                    }                                                                          
+                                    }   
+                                    console.log("insert successful")                                                                                                                                                 
                                     await wait(1200);                       
                                     success=true;
                                 }
