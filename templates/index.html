@@ -144,10 +144,8 @@ form input[type="submit"]:hover {
         if (Object.keys(params).length > 0 && params['state']) {
           if (params['state'] == localStorage.getItem('state')) {
             localStorage.setItem('oauth2-test-params', JSON.stringify(params) );
-
-            //...
           } else {
-            console.log('State mismatch. Possible CSRF attack');
+            console.log('State mismatch.');
           }
         }
 
@@ -225,20 +223,19 @@ form input[type="submit"]:hover {
                             
                     xhr_v.onreadystatechange = function (e) {
                         if (xhr_v.readyState === 4 && xhr_v.status === 200) {
-                            console.log("playlistItems successful")
+                            console.log("playlistItems successful");
+                            resolve();
+                        }else {
+                            throw new Error("playlistItems failed");
                         }
                     }
-                    xhr_v.send(request);
-                    
-                    resolve();
+                    xhr_v.send(request);                    
                 } else if (xhr.readyState === 4 && xhr.status === 401) {
                     oauth2SignIn();
                 }
             });
         }
-      
-        // If there's an access token, try an API request.
-        // Otherwise, start OAuth 2.0 flow.
+        
         function createPlaylist(video_ids) {
             return new Promise((resolve, reject) => {
                 let pid = '';
@@ -246,21 +243,26 @@ form input[type="submit"]:hover {
                 var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
                 if (params && params['access_token']) {
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST',
-                                        'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
+                    xhr.open('POST','https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
                             
                     xhr.onreadystatechange = async function (e) {
                         if (xhr.readyState === 4 && xhr.status === 200) {
-    //                      
                             let playlist_id = (JSON.parse(xhr.response)).id;
                             for(let i = 0; i < video_ids.length; i++) {
-                                await insertInPlaylist(playlist_id,video_ids[i]);  
-                                await wait(1200);                                 
+                                let success = false;
+                                while(!success){
+                                    try {
+                                        await insertInPlaylist(playlist_id,video_ids[i]);                                      
+                                        success = true;                                                
+                                    }catch(err){                                    
+                                        console.log("insert into playlist failed")
+                                    }                                      
+                                    await wait(1200);                       
+                                }
                             }
                             
                             resolve(playlist_id);
                         } else if (xhr.readyState === 4 && xhr.status === 401) {
-                            // Token invalid, so prompt for user permission.
                             oauth2SignIn();
                         }
                     };
