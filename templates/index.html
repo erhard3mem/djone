@@ -222,7 +222,7 @@ form input[type="submit"]:hover {
                         'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2Cstatus&access_token=' + params['access_token']);
                             
                     xhr_v.onreadystatechange = function (e) {
-                        if (xhr_v.readyState === 4 && xhr_v.status === 200) {
+                        if (xhr_v.status === 200) {
                             console.log("playlistItems successful");
                             resolve();
                         }else {
@@ -246,7 +246,7 @@ form input[type="submit"]:hover {
                     xhr.open('POST','https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus&access_token=' + params['access_token']);                                    
                             
                     xhr.onreadystatechange = async function (e) {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
+                        if (xhr.status === 200) {
                             let playlist_id = (JSON.parse(xhr.response)).id;
                             for(let i = 0; i < video_ids.length; i++) {
                                 let success = false;
