@@ -405,7 +405,8 @@ form input[type="submit"]:hover {
                     dataType: 'json',
                     success: function(response) {
                         console.log(response)      
-                        $('#loading').html("creating playlist... wait a moment");                  
+                        //$('#loading').html("creating playlist... wait a moment");                  
+                        $('#loading').html("");                  
 			            
                         for(let i = 0; i < response.length; i++) {
                             $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[i]+"'>"+response[i]+"</a>"));
