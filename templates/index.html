@@ -408,18 +408,18 @@ form input[type="submit"]:hover {
                         $('#loading').html("creating playlist... wait a moment");                  
 			            
                         for(let i = 0; i < response.length; i++) {
-                            //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
+                            $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/results?search_query="+response[s]+"'>"+response[s]+"</a>"));
                             //$("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+response[s]+"'>Your DJone YouTube playlist</a>"));
-                            vids.push(response[i])
+                            //vids.push(response[i])
                         }
 
-                        getYTIdsBySearchStrings(vids).then( d => {
+                       /* getYTIdsBySearchStrings(vids).then( d => {
                             createPlaylist(d).then( x => {
                                 $("#myList").append($('<li>').html("<a target=\"_blank\" href='https://www.youtube.com/playlist?list="+x+"'>Your DJone YouTube playlist</a>"));
                                 console.log(x);
                                 $('#loading').hide();
                             });                            
-                        });
+                        }); */
 
                         
                     },
